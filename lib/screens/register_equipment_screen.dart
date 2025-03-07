@@ -5,6 +5,7 @@ import '../models/equipment.dart';
 import '../models/peripherals.dart';
 import '../models/user.dart';
 import '../widgets/qr_code_widget.dart';
+import '../utils/debug_utils.dart';
 
 class RegisterEquipmentScreen extends StatefulWidget {
   @override
@@ -89,52 +90,100 @@ class _RegisterEquipmentScreenState extends State<RegisterEquipmentScreen> {
       });
       
       try {
-        // Convertir el mapa de periféricos a un objeto Peripheral con un mapa de tipos
-        Map<String, bool> peripheralTypes = {};
-        _selectedPeripherals.forEach((key, value) {
-          peripheralTypes[key] = true;
+        print('DEBUG: Iniciando registro de equipo');
+        print('DEBUG: Usuario seleccionado: ${_selectedUser!.id} - ${_selectedUser!.firstName} ${_selectedUser!.lastName}');
+        
+        // Convertir los periféricos seleccionados a una lista de objetos Peripheral
+        List<Peripheral> peripherals = [];
+        print('DEBUG: Periféricos seleccionados: ${_selectedPeripherals.keys.join(', ')}');
+        
+        _selectedPeripherals.forEach((type, value) {
+          if (value) {
+            try {
+              print('DEBUG: Creando periférico de tipo: $type');
+              final peripheral = Peripheral(
+                types: {type: true},
+                serialNumber: null, // Opcional, se podría agregar un campo para esto
+                isAssigned: true,
+                registrationDate: DateTime.now(),
+              );
+              peripherals.add(peripheral);
+              print('DEBUG: Periférico creado correctamente: ${peripheral.toMap()}');
+            } catch (e) {
+              print('DEBUG: Error al crear periférico de tipo $type: $e');
+              throw Exception('Error al crear periférico de tipo $type: $e');
+            }
+          }
         });
         
-        final peripheral = Peripheral(
-          types: peripheralTypes,
-          registrationDate: DateTime.now(),
-        );
-        
         // Generar código QR único para identificación interna
+        print('DEBUG: Generando código QR único');
         final qrCode = _qrService.generateUniqueQRCode(
           _serialNumberController.text,
           _selectedUser!.id,
         );
+        print('DEBUG: Código QR generado: $qrCode');
         
+        print('DEBUG: Creando objeto Equipment');
         final equipment = Equipment(
           id: '', // MongoDB generará el ID
           name: _nameController.text,
           description: _descriptionController.text,
           userId: _selectedUser!.id,
-          peripherals: [peripheral],
+          peripherals: peripherals,
           qrCode: qrCode,
           serialNumber: _serialNumberController.text,
           assignmentDate: DateTime.now(),
         );
         
+        print('DEBUG: Objeto Equipment creado: ${equipment.toMap()}');
+        print('DEBUG: Enviando equipo a la base de datos');
+        
         final equipmentId = await _databaseService.addEquipment(equipment);
+        print('DEBUG: Equipo registrado con ID: $equipmentId');
         
         // Recuperar el equipo completo con su ID generado
+        print('DEBUG: Recuperando equipo guardado');
         final savedEquipment = await _databaseService.getEquipmentById(equipmentId);
         
         if (savedEquipment != null) {
+          print('DEBUG: Equipo recuperado correctamente: ${savedEquipment.toMap()}');
           // Generar QR completo con toda la información del usuario y equipo
+          print('DEBUG: Generando código QR completo');
           final completeQR = _qrService.generateCompleteQRCode(_selectedUser!, savedEquipment);
+          print('DEBUG: Código QR completo generado');
           
           setState(() {
             _generatedQR = completeQR;
           });
+        } else {
+          print('DEBUG: No se pudo recuperar el equipo guardado');
         }
         
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Equipo registrado con éxito')),
         );
-      } catch (e) {
+      } catch (e, stackTrace) {
+        print('DEBUG: Error al registrar equipo: $e');
+        print('DEBUG: Stack trace: $stackTrace');
+        
+        // Usar la utilidad de depuración para mostrar un diálogo de error detallado
+        DebugUtils.showErrorDialog(
+          context,
+          'Error al registrar equipo',
+          e.toString(),
+        );
+        
+        // Registrar el error en los logs de depuración
+        DebugUtils.error('Error al registrar equipo: $e', stackTrace: stackTrace);
+        DebugUtils.logObject('Equipment data', {
+          'name': _nameController.text,
+          'description': _descriptionController.text,
+          'userId': _selectedUser?.id,
+          'serialNumber': _serialNumberController.text,
+          'peripherals': _selectedPeripherals,
+        });
+        
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error al registrar equipo: $e')),
         );
@@ -302,7 +351,7 @@ class _RegisterEquipmentScreenState extends State<RegisterEquipmentScreen> {
                             onChanged: (value) {
                               _togglePeripheral(type, value ?? false);
                             },
-                            subtitle: Text(isSelected ? '$type: true' : '$type: false'),
+                            subtitle: Text(isSelected ? 'Incluido' : 'No incluido'),
                           );
                         }).toList(),
                         SizedBox(height: 8),
@@ -323,7 +372,7 @@ class _RegisterEquipmentScreenState extends State<RegisterEquipmentScreen> {
                                 ),
                                 SizedBox(height: 4),
                                 ..._selectedPeripherals.keys.map((type) => 
-                                  Text('$type: ${_selectedPeripherals[type] != null ? true : false}')  // Mostrar el nombre del periférico y su valor booleano
+                                  Text('$type')
                                 ).toList(),
                               ],
                             ),

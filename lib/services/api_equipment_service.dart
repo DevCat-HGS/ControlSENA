@@ -57,16 +57,32 @@ class ApiEquipmentService {
 
   // Create equipment
   Future<Equipment> addEquipment(Equipment equipment) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/equipment'),
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode(equipment.toMap()..remove('_id')),
-    );
-    
-    if (response.statusCode == 201) {
-      return Equipment.fromMap(json.decode(response.body));
-    } else {
-      throw Exception('Failed to create equipment');
+    try {
+      print('DEBUG API: Preparando datos para enviar al servidor');
+      final equipmentMap = equipment.toMap()..remove('_id');
+      print('DEBUG API: Datos a enviar: ${json.encode(equipmentMap)}');
+      
+      print('DEBUG API: Enviando solicitud POST a $baseUrl/equipment');
+      final response = await http.post(
+        Uri.parse('$baseUrl/equipment'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(equipmentMap),
+      );
+      
+      print('DEBUG API: Respuesta recibida con código ${response.statusCode}');
+      print('DEBUG API: Cuerpo de la respuesta: ${response.body}');
+      
+      if (response.statusCode == 201) {
+        print('DEBUG API: Equipo creado exitosamente');
+        return Equipment.fromMap(json.decode(response.body));
+      } else {
+        print('DEBUG API: Error al crear equipo. Código: ${response.statusCode}, Respuesta: ${response.body}');
+        throw Exception('Failed to create equipment: ${response.statusCode} - ${response.body}');
+      }
+    } catch (e, stackTrace) {
+      print('DEBUG API: Excepción al crear equipo: $e');
+      print('DEBUG API: Stack trace: $stackTrace');
+      throw Exception('Exception: Failed to create equipment: $e');
     }
   }
 
