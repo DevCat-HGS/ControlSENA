@@ -7,7 +7,7 @@ class Equipment {
   final String userId; // ID del usuario asignado
   final List<Peripheral> peripherals;
   final String qrCode;
-  final String serialNumber; // Número de serie del equipo
+  final String? serialNumber; // Número de serie del equipo (opcional)
   final DateTime assignmentDate;
 
   Equipment({
@@ -17,7 +17,7 @@ class Equipment {
     required this.userId,
     required this.peripherals,
     required this.qrCode,
-    required this.serialNumber,
+    this.serialNumber,
     required this.assignmentDate,
   });
 

@@ -269,15 +269,10 @@ class _RegisterEquipmentScreenState extends State<RegisterEquipmentScreen> {
                             TextFormField(
                               controller: _serialNumberController,
                               decoration: InputDecoration(
-                                labelText: 'Número de Serie',
+                                labelText: 'Número de Serie (opcional)',
                                 border: OutlineInputBorder(),
                               ),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Por favor ingrese el número de serie';
-                                }
-                                return null;
-                              },
+                              // No validator required since it's optional
                             ),
                           ],
                         ),
