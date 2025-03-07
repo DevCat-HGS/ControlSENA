@@ -33,15 +33,13 @@ class _RegisterEquipmentScreenState extends State<RegisterEquipmentScreen> {
     'Almohadilla'
   ];
   
-  // Mapa para almacenar los periféricos seleccionados y sus números de serie
-  final Map<String, String?> _selectedPeripherals = {};
-
+  // Mapa para almacenar los periféricos seleccionados y sus valores booleanos
+  final Map<String, bool> _selectedPeripherals = {};
   @override
   void initState() {
     super.initState();
     _databaseService.initialize();
   }
-
   Future<void> _searchUser() async {
     if (_cardIdController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -75,17 +73,15 @@ class _RegisterEquipmentScreenState extends State<RegisterEquipmentScreen> {
       );
     }
   }
-
   void _togglePeripheral(String type, bool value) {
     setState(() {
       if (value) {
-        _selectedPeripherals[type] = null; // Inicialmente sin número de serie
+        _selectedPeripherals[type] = true; // Set to true when selected
       } else {
-        _selectedPeripherals.remove(type);
+        _selectedPeripherals.remove(type); // Remove when deselected
       }
     });
   }
-
   Future<void> _registerEquipment() async {
     if (_formKey.currentState!.validate() && _selectedUser != null) {
       setState(() {
@@ -93,14 +89,16 @@ class _RegisterEquipmentScreenState extends State<RegisterEquipmentScreen> {
       });
       
       try {
-        // Convertir el mapa de periféricos a una lista de objetos Peripheral
-        final peripherals = _selectedPeripherals.entries.map((entry) {
-          return Peripheral(
-            type: entry.key,
-            serialNumber: entry.value,
-            isAssigned: true,
-          );
-        }).toList();
+        // Convertir el mapa de periféricos a un objeto Peripheral con un mapa de tipos
+        Map<String, bool> peripheralTypes = {};
+        _selectedPeripherals.forEach((key, value) {
+          peripheralTypes[key] = true;
+        });
+        
+        final peripheral = Peripheral(
+          types: peripheralTypes,
+          registrationDate: DateTime.now(),
+        );
         
         // Generar código QR único para identificación interna
         final qrCode = _qrService.generateUniqueQRCode(
@@ -113,7 +111,7 @@ class _RegisterEquipmentScreenState extends State<RegisterEquipmentScreen> {
           name: _nameController.text,
           description: _descriptionController.text,
           userId: _selectedUser!.id,
-          peripherals: peripherals,
+          peripherals: [peripheral],
           qrCode: qrCode,
           serialNumber: _serialNumberController.text,
           assignmentDate: DateTime.now(),
@@ -147,7 +145,6 @@ class _RegisterEquipmentScreenState extends State<RegisterEquipmentScreen> {
       }
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -282,7 +279,6 @@ class _RegisterEquipmentScreenState extends State<RegisterEquipmentScreen> {
                 ),
                 
                 SizedBox(height: 24),
-                
                 // Sección para periféricos
                 Card(
                   child: Padding(
@@ -300,33 +296,38 @@ class _RegisterEquipmentScreenState extends State<RegisterEquipmentScreen> {
                         SizedBox(height: 16),
                         ..._peripheralTypes.map((type) {
                           final isSelected = _selectedPeripherals.containsKey(type);
-                          return Column(
-                            children: [
-                              CheckboxListTile(
-                                title: Text(type),
-                                value: isSelected,
-                                onChanged: (value) {
-                                  _togglePeripheral(type, value ?? false);
-                                },
-                              ),
-                              if (isSelected)
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 8.0),
-                                  child: TextFormField(
-                                    decoration: InputDecoration(
-                                      labelText: 'Número de Serie (opcional)',
-                                      border: OutlineInputBorder(),
-                                    ),
-                                    onChanged: (value) {
-                                      setState(() {
-                                        _selectedPeripherals[type] = value.isEmpty ? null : value;
-                                      });
-                                    },
-                                  ),
-                                ),
-                            ],
+                          return CheckboxListTile(
+                            title: Text(type),
+                            value: isSelected,
+                            onChanged: (value) {
+                              _togglePeripheral(type, value ?? false);
+                            },
+                            subtitle: Text(isSelected ? '$type: true' : '$type: false'),
                           );
                         }).toList(),
+                        SizedBox(height: 8),
+                        // Display selected peripherals as a summary
+                        if (_selectedPeripherals.isNotEmpty)
+                          Container(
+                            padding: EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Periféricos seleccionados:',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                SizedBox(height: 4),
+                                ..._selectedPeripherals.keys.map((type) => 
+                                  Text('$type: ${_selectedPeripherals[type] != null ? true : false}')  // Mostrar el nombre del periférico y su valor booleano
+                                ).toList(),
+                              ],
+                            ),
+                          ),
                       ],
                     ),
                   ),

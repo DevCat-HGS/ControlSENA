@@ -28,9 +28,7 @@ class QRService {
         'serialNumber': equipment.serialNumber,
         'assignmentDate': equipment.assignmentDate.toIso8601String(),
         'peripherals': equipment.peripherals.map((p) => {
-          'type': p.type,
-          'serialNumber': p.serialNumber ?? '',
-          'isAssigned': p.isAssigned,
+          'types': p.types,
         }).toList(),
       },
     };

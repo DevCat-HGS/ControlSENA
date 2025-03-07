@@ -1,50 +1,36 @@
 class Peripheral {
   final String? id;
-  final String type; // mouse, teclado, base refrigerante, etc.
-  final String? serialNumber;
-  final bool isAssigned;
-  final String? equipmentId;
+  final Map<String, bool> types; // Map of peripheral types and their boolean values
   final DateTime? registrationDate;
 
   Peripheral({
     this.id,
-    required this.type,
-    this.serialNumber,
-    required this.isAssigned,
-    this.equipmentId,
+    required this.types,
     this.registrationDate,
   });
 
   Map<String, dynamic> toMap() {
     return {
-      'type': type,
-      'serialNumber': serialNumber,
-      'isAssigned': isAssigned,
-      'equipmentId': equipmentId,
+      'types': types,
       'registrationDate': registrationDate?.toIso8601String(),
     };
   }
 
   factory Peripheral.fromMap(Map<String, dynamic> map) {
-    // Handle the case where 'type' is a Map<String, dynamic> instead of a String
-    String typeValue;
-    if (map['type'] is Map<String, dynamic>) {
-      // If 'type' is a map, extract the actual type string from it
-      typeValue = map['type']['type'] ?? '';
+    Map<String, bool> typesMap = {};
+    if (map['types'] is Map) {
+      typesMap = Map<String, bool>.from(map['types']);
+    } else if (map['type'] is Map<String, dynamic>) {
+      // Handle legacy format
+      typesMap[map['type']['type'] ?? ''] = true;
     } else if (map['type'] != null) {
-      // Otherwise use it directly if not null
-      typeValue = map['type'].toString();
-    } else {
-      // Default value if type is null
-      typeValue = '';
+      // Handle legacy format
+      typesMap[map['type'].toString()] = true;
     }
-    
+
     return Peripheral(
       id: map['_id'],
-      type: typeValue,
-      serialNumber: map['serialNumber'],
-      isAssigned: map['isAssigned'] ?? false,
-      equipmentId: map['equipmentId'],
+      types: typesMap,
       registrationDate: map['registrationDate'] != null 
           ? DateTime.parse(map['registrationDate']) 
           : null,
