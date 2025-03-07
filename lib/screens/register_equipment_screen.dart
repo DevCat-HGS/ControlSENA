@@ -13,6 +13,8 @@ class RegisterEquipmentScreen extends StatefulWidget {
 
 class _RegisterEquipmentScreenState extends State<RegisterEquipmentScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _descriptionController = TextEditingController();
   final _serialNumberController = TextEditingController();
   final _cardIdController = TextEditingController();
   User? _selectedUser;
@@ -108,10 +110,12 @@ class _RegisterEquipmentScreenState extends State<RegisterEquipmentScreen> {
         
         final equipment = Equipment(
           id: '', // MongoDB generará el ID
-          serialNumber: _serialNumberController.text,
+          name: _nameController.text,
+          description: _descriptionController.text,
           userId: _selectedUser!.id,
           peripherals: peripherals,
           qrCode: qrCode,
+          serialNumber: _serialNumberController.text,
           assignmentDate: DateTime.now(),
         );
         
@@ -232,22 +236,48 @@ class _RegisterEquipmentScreenState extends State<RegisterEquipmentScreen> {
                           ),
                         ),
                         SizedBox(height: 16),
-                        Row(
+                        Column(
                           children: [
-                            Expanded(
-                              child: TextFormField(
-                                controller: _serialNumberController,
-                                decoration: InputDecoration(
-                                  labelText: 'Número de Serie',
-                                  border: OutlineInputBorder(),
-                                ),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Por favor ingrese el número de serie';
-                                  }
-                                  return null;
-                                },
+                            TextFormField(
+                              controller: _nameController,
+                              decoration: InputDecoration(
+                                labelText: 'Nombre del Equipo',
+                                border: OutlineInputBorder(),
                               ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Por favor ingrese el nombre del equipo';
+                                }
+                                return null;
+                              },
+                            ),
+                            SizedBox(height: 16),
+                            TextFormField(
+                              controller: _descriptionController,
+                              decoration: InputDecoration(
+                                labelText: 'Descripción',
+                                border: OutlineInputBorder(),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Por favor ingrese una descripción';
+                                }
+                                return null;
+                              },
+                            ),
+                            SizedBox(height: 16),
+                            TextFormField(
+                              controller: _serialNumberController,
+                              decoration: InputDecoration(
+                                labelText: 'Número de Serie',
+                                border: OutlineInputBorder(),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Por favor ingrese el número de serie';
+                                }
+                                return null;
+                              },
                             ),
                           ],
                         ),
