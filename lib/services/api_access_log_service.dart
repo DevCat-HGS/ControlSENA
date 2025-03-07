@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import '../models/access_log.dart';
 
 class ApiAccessLogService {
-  final String baseUrl = 'http://localhost:3000/api';
+  final String baseUrl = 'http://10.0.2.2:3000/api';
 
   // Get all access logs
   Future<List<AccessLog>> getAllAccessLogs() async {

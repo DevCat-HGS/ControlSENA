@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import '../models/peripherals.dart';
 
 class ApiPeripheralService {
-  final String baseUrl = 'http://localhost:3000/api';
+  final String baseUrl = 'http://10.0.2.2:3000/api';
 
   // Get all peripherals
   Future<List<Peripheral>> getAllPeripherals() async {

@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import '../models/equipment.dart';
 
 class ApiEquipmentService {
-  final String baseUrl = 'http://localhost:3000/api';
+  final String baseUrl = 'http://10.0.2.2:3000/api';
 
   // Get all equipment
   Future<List<Equipment>> getAllEquipment() async {
