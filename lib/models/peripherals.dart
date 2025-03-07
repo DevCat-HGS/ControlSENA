@@ -26,9 +26,22 @@ class Peripheral {
   }
 
   factory Peripheral.fromMap(Map<String, dynamic> map) {
+    // Handle the case where 'type' is a Map<String, dynamic> instead of a String
+    String typeValue;
+    if (map['type'] is Map<String, dynamic>) {
+      // If 'type' is a map, extract the actual type string from it
+      typeValue = map['type']['type'] ?? '';
+    } else if (map['type'] != null) {
+      // Otherwise use it directly if not null
+      typeValue = map['type'].toString();
+    } else {
+      // Default value if type is null
+      typeValue = '';
+    }
+    
     return Peripheral(
       id: map['_id'],
-      type: map['type'],
+      type: typeValue,
       serialNumber: map['serialNumber'],
       isAssigned: map['isAssigned'] ?? false,
       equipmentId: map['equipmentId'],
