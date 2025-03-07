@@ -58,7 +58,9 @@ router.post('/', async (req, res) => {
     name: req.body.name,
     description: req.body.description,
     userId: req.body.userId,
-    registrationDate: req.body.registrationDate || new Date()
+    peripherals: req.body.peripherals || [], // Asegurarse de que peripherals siempre sea un array
+    serialNumber: req.body.serialNumber,
+    assignmentDate: req.body.assignmentDate || new Date()
   });
 
   try {
@@ -91,6 +93,12 @@ router.patch('/:id', getEquipment, async (req, res) => {
     } catch (err) {
       return res.status(500).json({ message: err.message });
     }
+  }
+  if (req.body.peripherals != null) {
+    res.equipment.peripherals = req.body.peripherals;
+  }
+  if (req.body.serialNumber != null) {
+    res.equipment.serialNumber = req.body.serialNumber;
   }
 
   try {

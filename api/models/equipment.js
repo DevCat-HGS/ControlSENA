@@ -19,7 +19,19 @@ const equipmentSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
-  registrationDate: {
+  peripherals: [{
+    type: {
+      type: String,
+      required: true
+    },
+    serialNumber: String,
+    isAssigned: {
+      type: Boolean,
+      default: true
+    }
+  }],
+  serialNumber: String,
+  assignmentDate: {
     type: Date,
     default: Date.now
   }

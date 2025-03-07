@@ -40,7 +40,7 @@ class Equipment {
       name: map['name'],
       description: map['description'],
       userId: map['userId'],
-      peripherals: (map['peripherals'] as List)
+      peripherals: (map['peripherals'] as List<dynamic>? ?? [])
           .map((p) => Peripheral.fromMap(p))
           .toList(),
       qrCode: map['qrCode'],
