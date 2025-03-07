@@ -60,9 +60,14 @@ class PeripheralService {
   Future<bool> updatePeripheral(String id, Map<String, dynamic> updates) async {
     await initialize();
     try {
+      var modifier = ModifierBuilder();
+      updates.forEach((key, value) {
+        modifier.set(key, value);
+      });
+      
       final result = await _peripheralsCollection.updateOne(
         where.eq('_id', ObjectId.parse(id)),
-        modify.set(updates)
+        modifier
       );
       return result.isSuccess;
     } catch (e) {
