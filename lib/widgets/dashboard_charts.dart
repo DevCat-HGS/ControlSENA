@@ -35,7 +35,6 @@ class DashboardCharts {
     ];
     
     return Container(
-      height: 200,
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
@@ -56,77 +55,75 @@ class DashboardCharts {
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 16),
-          Expanded(
-            child: equipments.isEmpty
-                ? Center(child: Text('No hay datos disponibles'))
-                : Row(
-                    children: [
-                      // Aquí iría el gráfico circular real
-                      // Por ahora, mostramos una representación simple
-                      Expanded(
-                        flex: 3,
-                        child: Container(
-                          padding: EdgeInsets.all(8),
-                          child: Center(
-                            child: Container(
-                              width: 100,
-                              height: 100,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                gradient: SweepGradient(
-                                  colors: colors.take(equipmentTypes.length).toList(),
-                                ),
+          equipments.isEmpty
+              ? Center(child: Text('No hay datos disponibles'))
+              : Row(
+                  children: [
+                    // Aquí iría el gráfico circular real
+                    // Por ahora, mostramos una representación simple
+                    Expanded(
+                      flex: 3,
+                      child: Container(
+                        padding: EdgeInsets.all(8),
+                        child: Center(
+                          child: Container(
+                            width: 100,
+                            height: 100,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: SweepGradient(
+                                colors: colors.take(equipmentTypes.length).toList(),
                               ),
-                              child: Center(
-                                child: Container(
-                                  width: 50,
-                                  height: 50,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Theme.of(context).cardColor,
-                                  ),
+                            ),
+                            child: Center(
+                              child: Container(
+                                width: 50,
+                                height: 50,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Theme.of(context).cardColor,
                                 ),
                               ),
                             ),
                           ),
                         ),
                       ),
-                      // Leyenda del gráfico
-                      Expanded(
-                        flex: 2,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ...equipmentTypes.entries.map((entry) {
-                              final index = equipmentTypes.keys.toList().indexOf(entry.key);
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 4.0),
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      width: 12,
-                                      height: 12,
-                                      color: colors[index % colors.length],
+                    ),
+                    // Leyenda del gráfico
+                    Expanded(
+                      flex: 2,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ...equipmentTypes.entries.map((entry) {
+                            final index = equipmentTypes.keys.toList().indexOf(entry.key);
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 4.0),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 12,
+                                    height: 12,
+                                    color: colors[index % colors.length],
+                                  ),
+                                  SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      '${entry.key}: ${entry.value}',
+                                      style: TextStyle(fontSize: 12),
+                                      overflow: TextOverflow.ellipsis,
                                     ),
-                                    SizedBox(width: 8),
-                                    Expanded(
-                                      child: Text(
-                                        '${entry.key}: ${entry.value}',
-                                        style: TextStyle(fontSize: 12),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            }).toList(),
-                          ],
-                        ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                        ],
                       ),
-                    ],
-                  ),
-          ),
+                    ),
+                  ],
+                ),
         ],
       ),
     );
@@ -153,7 +150,6 @@ class DashboardCharts {
     final weekdays = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
     
     return Container(
-      height: 200,
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
@@ -174,86 +170,87 @@ class DashboardCharts {
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 16),
-          Expanded(
-            child: logs.isEmpty
-                ? Center(child: Text('No hay datos disponibles'))
-                : Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      // Eje Y (valores)
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('10', style: TextStyle(fontSize: 10)),
-                          Text('5', style: TextStyle(fontSize: 10)),
-                          Text('0', style: TextStyle(fontSize: 10)),
-                        ],
+          logs.isEmpty
+              ? Center(child: Text('No hay datos disponibles'))
+              : Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    // Eje Y (valores)
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('10', style: TextStyle(fontSize: 10)),
+                        Text('5', style: TextStyle(fontSize: 10)),
+                        Text('0', style: TextStyle(fontSize: 10)),
+                      ],
+                    ),
+                    SizedBox(width: 8),
+                    // Gráfico de barras
+                    Expanded(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: List.generate(7, (index) {
+                          final day = index + 1;
+                          final entries = accessByDay[day]!['entry'] ?? 0;
+                          final exits = accessByDay[day]!['exit'] ?? 0;
+                          
+                          // Altura máxima para las barras
+                          final maxHeight = 80.0;
+                          // Factor de escala (asumiendo máximo 10 accesos)
+                          final scale = maxHeight / 10;
+                          
+                          return Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // Barra de entradas
+                              Container(
+                                width: 10,
+                                height: entries * scale,
+                                color: Colors.green,
+                              ),
+                              // Barra de salidas
+                              Container(
+                                width: 10,
+                                height: exits * scale,
+                                color: Colors.red,
+                              ),
+                              SizedBox(height: 4),
+                              // Etiqueta del día
+                              Text(
+                                weekdays[index],
+                                style: TextStyle(fontSize: 10),
+                              ),
+                            ],
+                          );
+                        }),
                       ),
-                      SizedBox(width: 8),
-                      // Gráfico de barras
-                      Expanded(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: List.generate(7, (index) {
-                            final day = index + 1;
-                            final entries = accessByDay[day]!['entry'] ?? 0;
-                            final exits = accessByDay[day]!['exit'] ?? 0;
-                            
-                            // Altura máxima para las barras
-                            final maxHeight = 100.0;
-                            // Factor de escala (asumiendo máximo 10 accesos)
-                            final scale = maxHeight / 10;
-                            
-                            return Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                // Barra de entradas
-                                Container(
-                                  width: 10,
-                                  height: entries * scale,
-                                  color: Colors.green,
-                                ),
-                                // Barra de salidas
-                                Container(
-                                  width: 10,
-                                  height: exits * scale,
-                                  color: Colors.red,
-                                ),
-                                SizedBox(height: 4),
-                                // Etiqueta del día
-                                Text(
-                                  weekdays[index],
-                                  style: TextStyle(fontSize: 10),
-                                ),
-                              ],
-                            );
-                          }),
-                        ),
-                      ),
-                    ],
-                  ),
-          ),
+                    ),
+                  ],
+                ),
           // Leyenda
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Row(
-                children: [
-                  Container(width: 10, height: 10, color: Colors.green),
-                  SizedBox(width: 4),
-                  Text('Entradas', style: TextStyle(fontSize: 10)),
-                ],
-              ),
-              SizedBox(width: 16),
-              Row(
-                children: [
-                  Container(width: 10, height: 10, color: Colors.red),
-                  SizedBox(width: 4),
-                  Text('Salidas', style: TextStyle(fontSize: 10)),
-                ],
-              ),
-            ],
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Row(
+                  children: [
+                    Container(width: 10, height: 10, color: Colors.green),
+                    SizedBox(width: 4),
+                    Text('Entradas', style: TextStyle(fontSize: 10)),
+                  ],
+                ),
+                SizedBox(width: 16),
+                Row(
+                  children: [
+                    Container(width: 10, height: 10, color: Colors.red),
+                    SizedBox(width: 4),
+                    Text('Salidas', style: TextStyle(fontSize: 10)),
+                  ],
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -280,7 +277,6 @@ class DashboardCharts {
     final maxValue = accessByHour.values.reduce((a, b) => a > b ? a : b);
     
     return Container(
-      height: 200,
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
@@ -301,10 +297,13 @@ class DashboardCharts {
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 16),
-          Expanded(
-            child: logs.isEmpty
-                ? Center(child: Text('No hay datos disponibles'))
-                : GridView.builder(
+          logs.isEmpty
+              ? Center(child: Text('No hay datos disponibles'))
+              : Container(
+                  height: 150,
+                  child: GridView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 8,
                       crossAxisSpacing: 4,
@@ -336,7 +335,7 @@ class DashboardCharts {
                       );
                     },
                   ),
-          ),
+                ),
         ],
       ),
     );

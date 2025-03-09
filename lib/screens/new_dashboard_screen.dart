@@ -294,13 +294,40 @@ class _NewDashboardScreenState extends State<NewDashboardScreen> {
         ),
         SizedBox(height: 16),
         // Gráfico de barras para entradas/salidas por día
-        DashboardCharts.buildWeeklyAccessChart(_recentLogs, context),
+        Container(
+          height: 250,
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.9,
+              child: DashboardCharts.buildWeeklyAccessChart(_recentLogs, context),
+            ),
+          ),
+        ),
         SizedBox(height: 16),
         // Gráfico circular para distribución de equipos
-        DashboardCharts.buildEquipmentDistributionChart(_equipments, context),
+        Container(
+          height: 250,
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.9,
+              child: DashboardCharts.buildEquipmentDistributionChart(_equipments, context),
+            ),
+          ),
+        ),
         SizedBox(height: 16),
         // Mapa de calor para horarios de actividad
-        DashboardCharts.buildHeatmapChart(_recentLogs, context),
+        Container(
+          height: 250,
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.9,
+              child: DashboardCharts.buildHeatmapChart(_recentLogs, context),
+            ),
+          ),
+        ),
       ],
     );
   }
