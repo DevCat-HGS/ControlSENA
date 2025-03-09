@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/database_service.dart';
 //import '../models/security_guard.dart';
-import 'dashboard_screen.dart';
+import 'new_dashboard_screen.dart';
 import 'register_security_guard_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -65,10 +65,12 @@ class _LoginScreenState extends State<LoginScreen> {
           return;
         }
         
-        // Navigate to dashboard on successful login
+        // When login is successful, navigate to the new dashboard
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
-            builder: (context) => DashboardScreen(securityGuard: securityGuard),
+            builder: (context) => NewDashboardScreen(
+              securityGuard: securityGuard,
+            ),
           ),
         );
       } catch (e) {

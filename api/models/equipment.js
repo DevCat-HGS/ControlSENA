@@ -20,9 +20,10 @@ const equipmentSchema = new mongoose.Schema({
     required: true
   },
   peripherals: [{
-    type: {
-      type: String,
-      required: true
+    types: {
+      type: Map,
+      of: Boolean,
+      default: {}
     },
     serialNumber: String,
     isAssigned: {

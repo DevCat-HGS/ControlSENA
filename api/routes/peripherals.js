@@ -31,7 +31,10 @@ router.get('/equipment/:equipmentId', async (req, res) => {
 // Get peripherals by type
 router.get('/type/:type', async (req, res) => {
   try {
-    const peripherals = await Peripheral.find({ type: req.params.type }).populate('equipmentId');
+    // Create a query that checks if the type exists as a key in the types Map
+    const query = {};
+    query[`types.${req.params.type}`] = { $exists: true };
+    const peripherals = await Peripheral.find(query).populate('equipmentId');
     res.json(peripherals);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -53,7 +56,7 @@ router.post('/', async (req, res) => {
   }
 
   const peripheral = new Peripheral({
-    type: req.body.type,
+    types: req.body.types || {},
     serialNumber: req.body.serialNumber,
     isAssigned: req.body.equipmentId ? true : false,
     equipmentId: req.body.equipmentId,
@@ -70,8 +73,8 @@ router.post('/', async (req, res) => {
 
 // Update peripheral
 router.patch('/:id', getPeripheral, async (req, res) => {
-  if (req.body.type != null) {
-    res.peripheral.type = req.body.type;
+  if (req.body.types != null) {
+    res.peripheral.types = req.body.types;
   }
   if (req.body.serialNumber != null) {
     res.peripheral.serialNumber = req.body.serialNumber;

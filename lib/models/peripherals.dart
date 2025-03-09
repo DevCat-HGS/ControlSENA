@@ -16,8 +16,12 @@ class Peripheral {
   });
 
   Map<String, dynamic> toMap() {
+    // Convertir el mapa de tipos a un formato que el backend pueda entender
+    // El backend espera un String para 'type', así que tomamos la primera clave del mapa
+    String type = types.keys.isNotEmpty ? types.keys.first : '';
+    
     return {
-      'types': types,
+      'type': type, // Enviamos solo el primer tipo como String
       'serialNumber': serialNumber,
       'isAssigned': isAssigned,
       'equipmentId': equipmentId,
@@ -27,13 +31,12 @@ class Peripheral {
 
   factory Peripheral.fromMap(Map<String, dynamic> map) {
     Map<String, bool> typesMap = {};
+    
+    // Manejar diferentes formatos de datos que pueden venir del backend
     if (map['types'] is Map) {
       typesMap = Map<String, bool>.from(map['types']);
-    } else if (map['type'] is Map<String, dynamic>) {
-      // Handle legacy format
-      typesMap[map['type']['type'] ?? ''] = true;
-    } else if (map['type'] != null) {
-      // Handle legacy format
+    } else if (map['type'] is String && map['type'].toString().isNotEmpty) {
+      // Si 'type' es un String, lo convertimos a nuestro formato de mapa
       typesMap[map['type'].toString()] = true;
     }
 

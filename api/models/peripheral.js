@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
 
 const peripheralSchema = new mongoose.Schema({
-  type: {
-    type: String,
-    required: true
+  types: {
+    type: Map,
+    of: Boolean,
+    default: {}
   },
   serialNumber: {
     type: String

@@ -1,0 +1,153 @@
+{
+  "database": "access_control_system",
+  "collections": {
+    "users": {
+      "description": "Almacena información de los usuarios del sistema",
+      "fields": {
+        "_id": "ObjectId",
+        "cardId": "String",
+        "firstName": "String",
+        "lastName": "String",
+        "registrationDate": "Date"
+      },
+      "example": {
+        "_id": "507f1f77bcf86cd799439011",
+        "cardId": "1234567890",
+        "firstName": "Juan",
+        "lastName": "Pérez",
+        "registrationDate": "2023-01-15T08:30:00.000Z"
+      }
+    },
+    "equipment": {
+      "description": "Almacena información de los equipos registrados",
+      "fields": {
+        "_id": "ObjectId",
+        "name": "String",
+        "description": "String",
+        "userId": "ObjectId",
+        "peripherals": "Array",
+        "qrCode": "String",
+        "serialNumber": "String (opcional)",
+        "assignmentDate": "Date"
+      },
+      "example": {
+        "_id": "507f1f77bcf86cd799439022",
+        "name": "Laptop HP ProBook",
+        "description": "Laptop para desarrollo de software",
+        "userId": "507f1f77bcf86cd799439011",
+        "peripherals": [
+          {
+            "_id": "507f1f77bcf86cd799439033",
+            "type": "mouse",
+            "serialNumber": "MS12345",
+            "isAssigned": true,
+            "equipmentId": "507f1f77bcf86cd799439022",
+            "registrationDate": "2023-01-15T08:35:00.000Z"
+          },
+          {
+            "_id": "507f1f77bcf86cd799439034",
+            "type": "keyboard",
+            "serialNumber": "KB67890",
+            "isAssigned": true,
+            "equipmentId": "507f1f77bcf86cd799439022",
+            "registrationDate": "2023-01-15T08:36:00.000Z"
+          }
+        ],
+        "qrCode": "EQUIP-HP-12345",
+        "serialNumber": "HP98765432",
+        "assignmentDate": "2023-01-15T08:40:00.000Z"
+      }
+    },
+    "peripherals": {
+      "description": "Almacena información de los periféricos asociados a equipos",
+      "fields": {
+        "_id": "ObjectId",
+        "type": "String",
+        "serialNumber": "String (opcional)",
+        "isAssigned": "Boolean",
+        "equipmentId": "ObjectId",
+        "registrationDate": "Date"
+      },
+      "example": {
+        "_id": "507f1f77bcf86cd799439033",
+        "type": "mouse",
+        "serialNumber": "MS12345",
+        "isAssigned": true,
+        "equipmentId": "507f1f77bcf86cd799439022",
+        "registrationDate": "2023-01-15T08:35:00.000Z"
+      }
+    },
+    "access_logs": {
+      "description": "Registra las entradas y salidas de equipos",
+      "fields": {
+        "_id": "ObjectId",
+        "equipmentId": "ObjectId",
+        "userId": "ObjectId",
+        "timestamp": "Date",
+        "accessType": "String (entry/exit)"
+      },
+      "example": {
+        "_id": "507f1f77bcf86cd799439044",
+        "equipmentId": "507f1f77bcf86cd799439022",
+        "userId": "507f1f77bcf86cd799439011",
+        "timestamp": "2023-01-16T08:00:00.000Z",
+        "accessType": "entry"
+      }
+    },
+    "security_guards": {
+      "description": "Almacena información de los guardias de seguridad",
+      "fields": {
+        "_id": "ObjectId",
+        "username": "String",
+        "password": "String (hashed)",
+        "firstName": "String",
+        "lastName": "String",
+        "registrationDate": "Date",
+        "isActive": "Boolean"
+      },
+      "example": {
+        "_id": "507f1f77bcf86cd799439055",
+        "username": "guardia1",
+        "password": "$2a$10$XQxBZZ2HB8eRsxzr2xMKQO3TfP6hxmZrD0lAd.BGgRW9J1xU8nhJK",
+        "firstName": "Carlos",
+        "lastName": "Rodríguez",
+        "registrationDate": "2023-01-10T09:00:00.000Z",
+        "isActive": true
+      }
+    }
+  },
+  "relationships": [
+    {
+      "from": "equipment",
+      "to": "users",
+      "type": "many-to-one",
+      "fields": {
+        "equipment.userId": "users._id"
+      }
+    },
+    {
+      "from": "peripherals",
+      "to": "equipment",
+      "type": "many-to-one",
+      "fields": {
+        "peripherals.equipmentId": "equipment._id"
+      }
+    },
+    {
+      "from": "access_logs",
+      "to": "equipment",
+      "type": "many-to-one",
+      "fields": {
+        "access_logs.equipmentId": "equipment._id"
+      }
+    },
+    {
+      "from": "access_logs",
+      "to": "users",
+      "type": "many-to-one",
+      "fields": {
+        "access_logs.userId": "users._id"
+      }
+    }
+  ]
+}
